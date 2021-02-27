@@ -1,0 +1,5 @@
+*** betterlockscreen 
+主页
+https://github.com/pavanjadhaw/betterlockscreen
+设置壁纸
+betterlockscreen  -u ~/.wallpaper/chino1.jpg -l -b 1 dim
