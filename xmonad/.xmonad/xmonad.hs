@@ -1,18 +1,25 @@
 import XMonad
 import Data.Monoid
 import System.Exit
+import XMonad.Util.SpawnOnce ( spawnOnce )
+import XMonad.Util.Run 
+
 import XMonad.Hooks.SetWMName
-import XMonad.Util.SpawnOnce
-import XMonad.Util.Run (spawnPipe)
-import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.ManageDocks ( avoidStruts, docks, manageDocks, Direction2D(D, L, R, U) )
 import XMonad.Hooks.DynamicLog
-import XMonad.Core (X ,withDisplay ,io)
-import Graphics.X11.Xinerama (getScreenInfo)
-import Graphics.X11.Xlib.Types (Rectangle)
+import XMonad.Hooks.EwmhDesktops ( ewmh )
+import XMonad.Hooks.ManageHelpers ( doFullFloat, isFullscreen )
+
+import XMonad.Layout.NoBorders
+import XMonad.Layout.Spacing ( spacingRaw, Border(Border) )
+import XMonad.Layout.Fullscreen ( fullscreenEventHook, fullscreenManageHook, fullscreenSupport, fullscreenFull )
+import XMonad.Layout.Gaps    
+import Control.Monad ( join, when )
 import System.IO
 
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
+import Data.Maybe (maybeToList)
 
 myTerminal      = "alacritty"
 
@@ -27,16 +34,33 @@ myBorderWidth   = 2
 -- 1 "left alt", 3 "right alt" 4 "windows key"
 myModMask       = mod4Mask
 
--- > workspaces = ["web", "irc", "code" ] ++ map show [4..9]
-myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
+-- myWorkspaces = ["web", "irc", "code" ] ++ map show [4..9]
+-- myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
 
-myNormalBorderColor  = "#dddddd"
-myFocusedBorderColor = "#ff0000"
+myNormalBorderColor  = "#3b4252"
+myFocusedBorderColor = "#bc96da"
 
-------------------------------------------------------------------------
+addNETSupported :: Atom -> X ()
+addNETSupported x   = withDisplay $ \dpy -> do
+    r               <- asks theRoot
+    a_NET_SUPPORTED <- getAtom "_NET_SUPPORTED"
+    a               <- getAtom "ATOM"
+    liftIO $ do
+       sup <- (join . maybeToList) <$> getWindowProperty32 dpy a_NET_SUPPORTED r
+       when (fromIntegral x `notElem` sup) $
+         changeProperty32 dpy r a_NET_SUPPORTED a propModeAppend [fromIntegral x]
+
+addEWMHFullscreen :: X ()
+addEWMHFullscreen   = do
+    wms <- getAtom "_NET_WM_STATE"
+    wfs <- getAtom "_NET_WM_STATE_FULLSCREEN"
+    mapM_ addNETSupported [wms, wfs]
+    
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- launch a terminal
     [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
+    -- lock screen
+    , ((modm,               xK_F1    ), spawn "betterlockscreen -l")
     -- launch dmenu
     , ((modm,               xK_p     ), spawn "dmenu_run")
     -- launch gmrun
@@ -168,11 +192,12 @@ myLayout = avoidStruts (tiled ||| Mirror tiled ||| Full)
 -- To match on the WM_NAME, you can use 'title' in the same way that
 -- 'className' and 'resource' are used below.
 --
-myManageHook = composeAll
+myManageHook = fullscreenManageHook <+> manageDocks <+> composeAll
     [ className =? "MPlayer"        --> doFloat
     , className =? "Gimp"           --> doFloat
     , resource  =? "desktop_window" --> doIgnore
-    , resource  =? "kdesktop"       --> doIgnore ]
+    , resource  =? "kdesktop"       --> doIgnore 
+    , isFullscreen --> doFullFloat]
 
 ------------------------------------------------------------------------
 -- Event handling
@@ -202,17 +227,35 @@ myLogHook = return ()
 myStartupHook = do
 	spawnOnce "nitrogen --restore &"
 	spawnOnce "compton &"
+	spawnOnce "picom -f"
 	setWMName "rewX"
 
 ------------------------------------------------------------------------
 -- Now run xmonad with all the defaults we set up.
 
 -- Run xmonad with the settings you specify. No need to modify this.
- 
-main = do
-	xmproc <- spawnPipe "xmobar -x 0 ~/.config/xmobar/primary.hs"
-	xmonad $ docks defaults
 
+xmobarEscape = concatMap doubleLts
+  where doubleLts '<' = "<<"
+        doubleLts x    = [x]
+myWorkspaces :: [String]
+myWorkspaces = clickable . (map xmobarEscape) $ ["1:\xf269","2:\xf120","3:\xf0e0", "4:\xf07c","5:\xf1b6","6:\xf281","7:\xf04b","8:\xf167","9"]                    where clickable l = [ "<action=xdotool key super+" ++ show (n) ++ ">" ++ ws ++ "</action>" | (i,ws) <- zip [1..9] l, let n = i ]
+
+main = do
+	xmproc <- spawnPipe ("xmobar -x 0 ~/.config/xmobar/primary.hs")
+	xmonad $ ewmh $ docks $ defaults {
+	logHook = dynamicLogWithPP $ xmobarPP {
+	    ppOutput = hPutStrLn xmproc
+	   ,ppVisible = xmobarColor "#7F7F7F" "" 
+	   ,ppTitle = xmobarColor "#222222" "" 
+	   ,ppCurrent = xmobarColor "#2E9AFE" ""
+           ,ppHidden  = xmobarColor "#7F7F7F" ""
+	   ,ppLayout = xmobarColor"#7F7F7F" ""
+           ,ppUrgent = xmobarColor "#900000" "" . wrap "[" "]" 
+        }
+	, manageHook = manageDocks <+> myManageHook
+	, startupHook = myStartupHook
+    }
 -- A structure containing your configuration settings, overriding
 -- fields in the default config. Any you don't override, will
 -- use the defaults defined in xmonad/XMonad/Config.hs
@@ -233,7 +276,7 @@ defaults = def {
       -- hooks, layouts
         layoutHook         = myLayout,
         manageHook         = myManageHook,
-        handleEventHook    = myEventHook <+> docksEventHook,
+        handleEventHook    = myEventHook,
         logHook            = myLogHook,
         startupHook        = myStartupHook
     }
