@@ -239,27 +239,26 @@ xmobarEscape = concatMap doubleLts
   where doubleLts '<' = "<<"
         doubleLts x    = [x]
 myWorkspaces :: [String]
-myWorkspaces = clickable . (map xmobarEscape) $ ["1:\xf269","2:\xf120","3:\xf0e0", "4:\xf07c","5:\xf1b6","6:\xf281","7:\xf04b","8:\xf167","9"]                    where clickable l = [ "<action=xdotool key super+" ++ show (n) ++ ">" ++ ws ++ "</action>" | (i,ws) <- zip [1..9] l, let n = i ]
+myWorkspaces = clickable . (map xmobarEscape)  $ ["www", "dev", "term", "ref", "sys", "fs", "img", "vid", "misc"]
+  where
+    clickable l = ["<action=xdotool key super+" ++ show (i) ++ "> " ++ ws ++ "</action>" | (i, ws) <- zip [1 .. 9] l]
+
+--["1:\xf269","2:\xf120","3:\xf0e0", "4:\xf07c","5:\xf1b6","6:\xf281","7:\xf04b","8:\xf167","9"]                    where clickable l = [ "<action=xdotool key super+" ++ show (n) ++ ">" ++ ws ++ "</action>" | (i,ws) <- zip [1..9] l, let n = i ]
 
 main = do
-	xmproc <- spawnPipe ("xmobar -x 0 ~/.config/xmobar/primary.hs")
+	xmproc <- spawnPipe ("xmobar -x 0 ~/.config/xmobar/xmobarrc.hs")
 	xmonad $ ewmh $ docks $ defaults {
 	logHook = dynamicLogWithPP $ xmobarPP {
 	    ppOutput = hPutStrLn xmproc
 	   ,ppVisible = xmobarColor "#7F7F7F" "" 
-	   ,ppTitle = xmobarColor "#222222" "" 
+	   ,ppTitle = xmobarColor "#d9c5bb" "" 
 	   ,ppCurrent = xmobarColor "#2E9AFE" ""
            ,ppHidden  = xmobarColor "#7F7F7F" ""
 	   ,ppLayout = xmobarColor"#7F7F7F" ""
            ,ppUrgent = xmobarColor "#900000" "" . wrap "[" "]" 
         }
-	, manageHook = manageDocks <+> myManageHook
-	, startupHook = myStartupHook
     }
--- A structure containing your configuration settings, overriding
--- fields in the default config. Any you don't override, will
--- use the defaults defined in xmonad/XMonad/Config.hs
---
+
 defaults = def {
       -- simple stuff
         terminal           = myTerminal,
@@ -275,7 +274,7 @@ defaults = def {
         mouseBindings      = myMouseBindings,
       -- hooks, layouts
         layoutHook         = myLayout,
-        manageHook         = myManageHook,
+        manageHook         = manageDocks <+> myManageHook,
         handleEventHook    = myEventHook,
         logHook            = myLogHook,
         startupHook        = myStartupHook
