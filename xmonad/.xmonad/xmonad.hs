@@ -35,29 +35,11 @@ myBorderWidth   = 2
 myModMask       = mod4Mask
 
 -- myWorkspaces = ["web", "irc", "code" ] ++ map show [4..9]
--- myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
 
 myNormalBorderColor  = "#3b4252"
 myFocusedBorderColor = "#bc96da"
 
-addNETSupported :: Atom -> X ()
-addNETSupported x   = withDisplay $ \dpy -> do
-    r               <- asks theRoot
-    a_NET_SUPPORTED <- getAtom "_NET_SUPPORTED"
-    a               <- getAtom "ATOM"
-    liftIO $ do
-       sup <- (join . maybeToList) <$> getWindowProperty32 dpy a_NET_SUPPORTED r
-       when (fromIntegral x `notElem` sup) $
-         changeProperty32 dpy r a_NET_SUPPORTED a propModeAppend [fromIntegral x]
-
-addEWMHFullscreen :: X ()
-addEWMHFullscreen   = do
-    wms <- getAtom "_NET_WM_STATE"
-    wfs <- getAtom "_NET_WM_STATE_FULLSCREEN"
-    mapM_ addNETSupported [wms, wfs]
-    
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
-    -- launch a terminal
     [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
     -- lock screen
     , ((modm,               xK_F1    ), spawn "betterlockscreen -l")
@@ -65,6 +47,10 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,               xK_p     ), spawn "dmenu_run")
     -- launch gmrun
     , ((modm .|. shiftMask, xK_p     ), spawn "krunner")
+    -- browser: firefox
+    , ((mod4Mask,           xK_f     ), spawn "firefox")
+    -- browser: vivaldi
+    , ((modm,		    xK_v     ), spawn "vivaldi")
     -- close focused window
     , ((modm .|. shiftMask, xK_c     ), kill)
      -- Rotate through the available layout algorithms
@@ -154,18 +140,6 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
     -- you may also bind events to the mouse scroll wheel (button4 and button5)
     ]
 
-------------------------------------------------------------------------
--- Layouts:
-
--- You can specify and transform your layouts by modifying these values.
--- If you change layout bindings be sure to use 'mod-shift-space' after
--- restarting (with 'mod-q') to reset your layout state to the new
--- defaults, as xmonad preserves your old layout settings by default.
---
--- The available layouts.  Note that each layout is separated by |||,
--- which denotes layout choice.
---
-
 myLayout = avoidStruts (tiled ||| Mirror tiled ||| Full)
   where
      -- default tiling algorithm partitions the screen into two panes
@@ -176,9 +150,6 @@ myLayout = avoidStruts (tiled ||| Mirror tiled ||| Full)
      ratio   = 1/2
      -- Percent of screen to increment by when resizing panes
      delta   = 3/100
-
-------------------------------------------------------------------------
--- Window rules:
 
 -- Execute arbitrary actions and WindowSet manipulations when managing
 -- a new window. You can use this to, for example, always float a
@@ -191,7 +162,6 @@ myLayout = avoidStruts (tiled ||| Mirror tiled ||| Full)
 --
 -- To match on the WM_NAME, you can use 'title' in the same way that
 -- 'className' and 'resource' are used below.
---
 myManageHook = fullscreenManageHook <+> manageDocks <+> composeAll
     [ className =? "MPlayer"        --> doFloat
     , className =? "Gimp"           --> doFloat
@@ -199,7 +169,6 @@ myManageHook = fullscreenManageHook <+> manageDocks <+> composeAll
     , resource  =? "kdesktop"       --> doIgnore 
     , isFullscreen --> doFullFloat]
 
-------------------------------------------------------------------------
 -- Event handling
 
 -- * EwmhDesktops users should change this to ewmhDesktopsEventHook
@@ -210,16 +179,11 @@ myManageHook = fullscreenManageHook <+> manageDocks <+> composeAll
 --
 myEventHook = mempty
 
-------------------------------------------------------------------------
 -- Status bars and logging
-
 -- Perform an arbitrary action on each internal state change or X event.
 -- See the 'XMonad.Hooks.DynamicLog' extension for examples.
 --
 myLogHook = return ()
-
-------------------------------------------------------------------------
--- Startup hook
 
 -- Perform an arbitrary action each time xmonad starts or is restarted
 -- with mod-q.  Used by, e.g., XMonad.Layout.PerWorkspace to initialize
@@ -228,12 +192,9 @@ myStartupHook = do
 	spawnOnce "nitrogen --restore &"
 	spawnOnce "compton &"
 	spawnOnce "picom -f"
+	spawnOnce "albert"
 	setWMName "rewX"
 
-------------------------------------------------------------------------
--- Now run xmonad with all the defaults we set up.
-
--- Run xmonad with the settings you specify. No need to modify this.
 
 xmobarEscape = concatMap doubleLts
   where doubleLts '<' = "<<"
@@ -242,8 +203,6 @@ myWorkspaces :: [String]
 myWorkspaces = clickable . (map xmobarEscape)  $ ["www", "dev", "term", "ref", "sys", "fs", "img", "vid", "misc"]
   where
     clickable l = ["<action=xdotool key super+" ++ show (i) ++ "> " ++ ws ++ "</action>" | (i, ws) <- zip [1 .. 9] l]
-
---["1:\xf269","2:\xf120","3:\xf0e0", "4:\xf07c","5:\xf1b6","6:\xf281","7:\xf04b","8:\xf167","9"]                    where clickable l = [ "<action=xdotool key super+" ++ show (n) ++ ">" ++ ws ++ "</action>" | (i,ws) <- zip [1..9] l, let n = i ]
 
 main = do
 	xmproc <- spawnPipe ("xmobar -x 0 ~/.config/xmobar/xmobarrc.hs")
