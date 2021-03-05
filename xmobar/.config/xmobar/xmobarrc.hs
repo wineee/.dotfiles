@@ -7,13 +7,12 @@ Config {
     allDesktops = True,
     persistent = True,
     alignSep = "}{",
-    template = "<fc=#b303ff> hi </fc> %UnsafeStdinReader% }{ \
+    template = "<fc=#b303ff> λ </fc> %UnsafeStdinReader% }{ \
         \<fc=#e1acff> %multicpu% | %coretemp% </fc>\
         \<fc=#FFB86C> %dynnetwork% </fc>\
         \<fc=#c3e88d> | %battery% </fc>\
         \<fc=#81AAFF> | %memory% </fc>\
-        \<fc=#8BE9FD> %date% </fc>\
-        \%uname%"
+        \<fc=#8BE9FD> %date% </fc>"
     commands = [ 
         Run Date "|  %d %b %Y %H:%M " "date" 600,
         Run Com "bash" ["-c", "checkupdates | wc -l"] "updates" 3000,
