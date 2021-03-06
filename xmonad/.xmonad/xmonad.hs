@@ -34,18 +34,25 @@ myBorderWidth   = 2
 -- 1 "left alt", 3 "right alt" 4 "windows key"
 myModMask       = mod4Mask
 
--- myWorkspaces = ["web", "irc", "code" ] ++ map show [4..9]
-
 myNormalBorderColor  = "#3b4252"
 myFocusedBorderColor = "#bc96da"
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
     -- lock screen
-    , ((modm,               xK_F1    ), spawn "betterlockscreen -l")
+    , ((modm,               xK_x     ), spawn "betterlockscreen -l")
+    -- 音量控制
+    , ((modm,               xK_F1    ), spawn "pamixer -t")
+    , ((modm,               xK_F2    ), spawn "pamixer -d 10")
+    , ((modm,               xK_F3    ), spawn "pamixer -i 10")
+    -- 屏幕亮度
+    , ((modm,		    xK_F5    ), spawn "brightnessctl set +10%")
+    , ((modm,		    xK_F4    ), spawn "brightnessctl set 10%-")
+    -- 截图
+    ,((mod4Mask, xK_a), spawn "sleep 0.2; scrot -s -e 'xclip -selection clipboard -t \"image/png\" < $f && rm $f'")
     -- launch dmenu
     , ((modm,               xK_p     ), spawn "dmenu_run")
-    -- launch gmrun
+    -- launch krunner
     , ((modm .|. shiftMask, xK_p     ), spawn "krunner")
     -- browser: firefox
     , ((mod4Mask,           xK_f     ), spawn "firefox")
@@ -64,8 +71,6 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- Move focus to the next window
     , ((modm,               xK_j     ), windows W.focusDown)
 --
---
-
     -- Move focus to the previous window
     , ((modm,               xK_k     ), windows W.focusUp  )
     -- Move focus to the master window
@@ -193,14 +198,16 @@ myStartupHook = do
 	spawnOnce "compton &"
 	spawnOnce "picom -f"
 	spawnOnce "albert"
+	spawnOnce "xmodmap .Xmodmap"
+	spawnOnce "nm-applet"
+	spawnOnce "fcitx5"
 	setWMName "rewX"
-
 
 xmobarEscape = concatMap doubleLts
   where doubleLts '<' = "<<"
         doubleLts x    = [x]
 myWorkspaces :: [String]
-myWorkspaces = clickable . (map xmobarEscape)  $ ["www", "dev", "term", "ref", "sys", "fs", "img", "vid", "misc"]
+myWorkspaces = clickable . (map xmobarEscape)  $  ["web", "irc", "code" ] ++ map show [4..9]
   where
     clickable l = ["<action=xdotool key super+" ++ show (i) ++ "> " ++ ws ++ "</action>" | (i, ws) <- zip [1 .. 9] l]
 
