@@ -1,5 +1,10 @@
 *** betterlockscreen 
 主页
 https://github.com/pavanjadhaw/betterlockscreen
-设置壁纸
-betterlockscreen  -u ~/.wallpaper/chino1.jpg -l -b 1 dim
+设置锁屏壁纸
+=betterlockscreen  -u ~/.wallpaper/chino1.jpg -l -b 1 dim=
+
+*** xmodmap
+交换键盘上的Esc键与Caps Lock键的值
+安装 =yay -S xorg-xmodmap=
+设置 =xmodmap .Xmodmap=
