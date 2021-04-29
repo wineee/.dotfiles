@@ -8,3 +8,6 @@ https://github.com/pavanjadhaw/betterlockscreen
 交换键盘上的Esc键与Caps Lock键的值
 安装 =yay -S xorg-xmodmap=
 设置 =xmodmap .Xmodmap=
+*** neofetch
+符号乱码，需要安装字体
+yay -S ttf-nerd-fonts-symbols-mono
