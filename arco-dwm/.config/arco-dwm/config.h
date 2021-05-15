@@ -50,6 +50,32 @@ static const Rule rules[] = {
 	{ "Xfce4-terminal",            NULL,       NULL,       0,            1,           -1 },
 	{ "firefox",                   NULL,       NULL,       0,            0,           -1 },
 	{ "Arcolinux-welcome-app.py",  NULL,       NULL,       0,            1,           -1 },
+		{ "jetbrains-*",                    "JetBrains Toolbox",        NULL,               1 << 1,       1,           -1 },
+	{ "jetbrains-*",                    "sun-awt-X11-XFramePeer",   NULL,               1 << 1,       0,           -1 },
+	{ "jetbrains-*",                    "jetbrains-*",              "win0",             1 << 1,       1,           -1 },
+	{ "jetbrains-*",                    NULL,                       "Welcome to*",      1 << 1,       1,           -1 },
+    { "Google-chrome",                 "google-chrome",             NULL,               1 << 2,       0,           -1 },
+	{ "Vivaldi-stable",                 "vivaldi-stable",           NULL,               1 << 2,       0,           -1 },
+	{ "FirefoxNightly",                 NULL,                       NULL,               1 << 2,       0,           -1 },
+	{ "Nightly",                        NULL,                       NULL,               1 << 2,       0,           -1 },
+	{ "Navigator",                      "Nightly",                  NULL,               1 << 2,       0,           -1 },
+	{ "Alacritty",                      "kitty-music",              NULL,               1 << 3,       0,           -1 },
+	{ "kitty-music",                    NULL,                       NULL,               1 << 3,       0,           -1 },
+	{ "qqmusic",                        NULL,                       NULL,               1 << 3,       0,           -1 },
+	{ "Spotify",                        "spotify",                  NULL,               1 << 3,       0,           -1 },
+	{ "netease-cloud-music",            NULL,                       NULL,               1 << 3,       0,           -1 },
+	{ "Steam",                          NULL,                       NULL,               1 << 4,       0,           -1 },
+	{ "VirtualBox Machine",             NULL,                       NULL,               1 << 5,       0,           -1 },
+	{ "Alacritty",                      "Alacritty",                NULL,               1 << 6,       0,           -1 },
+	{ "Qq",                             "qq",                       NULL,               1 << 6,       1,           -1 },
+	{ "Freechat",                       "freechat",                 NULL,               1 << 6,       0,           -1 },
+	{ "TelegramDesktop",                NULL,                       NULL,               1 << 7,       0,           -1 },
+	{ "qv2ray",                         NULL,                       NULL,               1 << 8,       0,           -1 },
+	{ NULL,                             "kitty-reload",             NULL,               1 << 8,       0,           -1 },
+
+	{ "xdman-Main",                     NULL,                       NULL,               0,            1,           -1 },
+	{ "Nitrogen",                       NULL,                       NULL,               0,            1,           -1 },
+	{ "lxappearance",                   NULL,                       NULL,               0,            1,           -1 },
 };
 
 /* layout(s) */
@@ -78,6 +104,7 @@ static const Layout layouts[] = {
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+#define CMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
@@ -144,6 +171,22 @@ static Key keys[] = {
 	TAGKEYS(                        XK_7,                      6)
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
+
+	/* My Own App Start Ways */
+    { Mod1Mask,                     XK_c,           spawn,          CMD("code") },
+    { MODKEY,                       XK_e,           spawn,          CMD("google-chrome-stable") },
+    { MODKEY,                       XK_z,           spawn,          CMD("zathura") },
+    { MODKEY|ShiftMask,             XK_Return,      spawn,          CMD("alacritty") },
+    { MODKEY|ShiftMask,             XK_q,           spawn,          CMD("xkill") },
+    { MODKEY|ShiftMask,             XK_s,           spawn,          CMD("flameshot gui") },
+    { MODKEY|ShiftMask,             XK_n,           spawn,          CMD("thunar") },
+    { MODKEY|ShiftMask,             XK_m,           spawn,          CMD("alacritty --class kitty-music -e ncmpcpp") },
+    { MODKEY|ShiftMask,             XK_h,           spawn,          CMD("alacritty -e htop") },
+    { MODKEY|ShiftMask,             XK_e,           spawn,          CMD("emacs") },
+    { MODKEY|ShiftMask,             XK_v,           spawn,          CMD("VBoxManage startvm 'Windows10' --type gui") },
+
+    { Mod1Mask|ControlMask,         XK_Delete,      spawn,          CMD("betterlockscreen -l") },
+    { Mod1Mask|ControlMask,         XK_s,           spawn,          CMD("systemctl suspend") },
 };
 
 /* IF YOU HAVE A AZERTY KEYBOARD USE THESE CODES
