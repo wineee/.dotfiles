@@ -1,7 +1,7 @@
 # https://github.com/alacritty/alacritty/blob/master/alacritty.yml
 
-# 字体使用Soure Code Pro
-family: Source Code Pro
+# 字体使用
+family: Monospace 18
 # 背景不透明度
 background_opacity: 0.7
 
