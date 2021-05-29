@@ -33,9 +33,9 @@ static const unsigned int alphas[][3]      = {
 };
 
 /* tagging */
-/*static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };*/
+static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 /* static const char *tags[] = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX" }; */
-static const char *tags[] = { "", "", "", "", "", "", "", "", "" }; 
+/* static const char *tags[] = { "", "", "", "", "", "", "", "", "" }; */ 
 /* static const char *tags[] = { "Web", "Chat", "Edit", "Meld", "Vb", "Mail", "Video", "Image", "Files" }; */
 
 
@@ -45,32 +45,20 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 *  use tags mask to point an application to a specific workspace
 	 */
-	/* class                       instance    title      tags mask      isfloating   monitor */
-	{ "Gimp",                      NULL,       NULL,       0,            0,           -1 },
-	{ "Xfce4-terminal",            NULL,       NULL,       0,            1,           -1 },
-	{ "firefox",                   NULL,       NULL,       0,            0,           -1 },
-	{ "Arcolinux-welcome-app.py",  NULL,       NULL,       0,            1,           -1 },
-		{ "jetbrains-*",                    "JetBrains Toolbox",        NULL,               1 << 1,       1,           -1 },
-	{ "jetbrains-*",                    "sun-awt-X11-XFramePeer",   NULL,               1 << 1,       0,           -1 },
-	{ "jetbrains-*",                    "jetbrains-*",              "win0",             1 << 1,       1,           -1 },
-	{ "jetbrains-*",                    NULL,                       "Welcome to*",      1 << 1,       1,           -1 },
-    { "Google-chrome",                 "google-chrome",             NULL,               1 << 2,       0,           -1 },
-	{ "Vivaldi-stable",                 "vivaldi-stable",           NULL,               1 << 2,       0,           -1 },
-	{ "FirefoxNightly",                 NULL,                       NULL,               1 << 2,       0,           -1 },
-	{ "Nightly",                        NULL,                       NULL,               1 << 2,       0,           -1 },
-	{ "Navigator",                      "Nightly",                  NULL,               1 << 2,       0,           -1 },
-	{ "Alacritty",                      "kitty-music",              NULL,               1 << 3,       0,           -1 },
-	{ "kitty-music",                    NULL,                       NULL,               1 << 3,       0,           -1 },
-	{ "qqmusic",                        NULL,                       NULL,               1 << 3,       0,           -1 },
-	{ "Spotify",                        "spotify",                  NULL,               1 << 3,       0,           -1 },
-	{ "netease-cloud-music",            NULL,                       NULL,               1 << 3,       0,           -1 },
-	{ "Steam",                          NULL,                       NULL,               1 << 4,       0,           -1 },
-	{ "VirtualBox Machine",             NULL,                       NULL,               1 << 5,       0,           -1 },
-	{ "Alacritty",                      "Alacritty",                NULL,               1 << 6,       0,           -1 },
-	{ "Qq",                             "qq",                       NULL,               1 << 6,       1,           -1 },
-	{ "Freechat",                       "freechat",                 NULL,               1 << 6,       0,           -1 },
-	{ "TelegramDesktop",                NULL,                       NULL,               1 << 7,       0,           -1 },
-	{ "qv2ray",                         NULL,                       NULL,               1 << 8,       0,           -1 },
+	/* class                     	    instance    		title              tags mask      isfloating   monitor */
+	{ "Gimp",                           NULL,       		NULL,               0,            0,           -1 },
+	{ "Xfce4-terminal",           	    NULL,      			NULL,               0,            1,           -1 },
+	{ "firefox",                   	    NULL,      			NULL,               0,            0,           -1 },
+	{ "Arcolinux-welcome-app.py",  	    NULL,       		NULL, 		    0,            1,           -1 },
+	{ "Vivaldi-stable",                 "vivaldi-stable",           NULL,               0,            0,           -1 },
+	{ "qqmusic",                        NULL,                       NULL,               0,            0,           -1 },
+	{ "netease-cloud-music",            NULL,                       NULL,               0,            0,           -1 },
+	{ "VirtualBox Machine",             NULL,                       NULL,               0,            0,           -1 },
+	{ "Alacritty",                      "Alacritty",                NULL,               0,            0,           -1 },
+	{ "Qq",                             "qq",                       NULL,               0,            1,           -1 },
+	{ "Freechat",                       "freechat",                 NULL,               0,            0,           -1 },
+	{ "TelegramDesktop",                NULL,                       NULL,               0,            0,           -1 },
+	{ "qv2ray",                         NULL,                       NULL,               0,            0,           -1 },
 	{ NULL,                             "kitty-reload",             NULL,               1 << 8,       0,           -1 },
 
 	{ "xdman-Main",                     NULL,                       NULL,               0,            1,           -1 },
@@ -135,13 +123,13 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_equal,  setgaps,        {.i = 0  } },
 	/*{ MODKEY,                       XK_Return, zoom,           {0} },*/
 	/*{ MODKEY,                       XK_Tab,    view,           {0} },*/
-	{ MODKEY|ShiftMask,				XK_q,      killclient,     {0} },
-	{ MODKEY,						XK_q,      killclient,     {0} },
+	{ MODKEY|ShiftMask,		XK_q,      killclient,     {0} },
+	{ MODKEY,                       XK_q,      killclient,     {0} },
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
 	{ MODKEY,                       XK_g,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY|ControlMask,			XK_comma,  cyclelayout,    {.i = -1 } },
+	{ MODKEY|ControlMask,    	XK_comma,  cyclelayout,    {.i = -1 } },
 	{ MODKEY|ControlMask,           XK_period, cyclelayout,    {.i = +1 } },
 	{ MODKEY,                       XK_space,  cyclelayout,    {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
@@ -156,10 +144,10 @@ static Key keys[] = {
 	{ Mod1Mask|ControlMask,         XK_Left,   shiftview,      {.i = -1 } },
 	{ Mod1Mask|ControlMask,         XK_Up,     shiftview,      {.i =  1 } },
 	{ Mod1Mask|ControlMask,         XK_Down,   shiftview,      {.i = -1 } },	
-	{ Mod1Mask,						XK_Tab,    shiftview,      {.i =  1 } },
+	{ Mod1Mask,			XK_Tab,    shiftview,      {.i =  1 } },
 	{ Mod1Mask|ShiftMask,	        XK_Tab,	   shiftview,	   {.i = -1 } },
-	{ MODKEY,		        		XK_Tab,    shiftview,	   {.i =  1 } },
-	{ MODKEY|ShiftMask,		        XK_Tab,	   shiftview,	   {.i = -1 } },
+	{ MODKEY,        		XK_Tab,    shiftview,	   {.i =  1 } },
+	{ MODKEY|ShiftMask,	        XK_Tab,	   shiftview,	   {.i = -1 } },
 
 
 	TAGKEYS(                        XK_1,                      0)
@@ -173,9 +161,9 @@ static Key keys[] = {
 	TAGKEYS(                        XK_9,                      8)
 
 	/* My Own App Start Ways */
-    { Mod1Mask,                     XK_c,           spawn,          CMD("code") },
-    { MODKEY,                       XK_e,           spawn,          CMD("google-chrome-stable") },
-    { MODKEY,                       XK_z,           spawn,          CMD("zathura") },
+    { MODKEY|ShiftMask,             XK_c,           spawn,          CMD("code") },
+	//    { MODKEY,                       XK_e,           spawn,          CMD("") },
+    { MODKEY,                       XK_z,           spawn,          CMD("zeal") },
     { MODKEY|ShiftMask,             XK_Return,      spawn,          CMD("alacritty") },
     { MODKEY|ShiftMask,             XK_q,           spawn,          CMD("xkill") },
     { MODKEY|ShiftMask,             XK_s,           spawn,          CMD("flameshot gui") },
@@ -183,7 +171,7 @@ static Key keys[] = {
     { MODKEY|ShiftMask,             XK_m,           spawn,          CMD("alacritty --class kitty-music -e ncmpcpp") },
     { MODKEY|ShiftMask,             XK_h,           spawn,          CMD("alacritty -e htop") },
     { MODKEY|ShiftMask,             XK_e,           spawn,          CMD("emacs") },
-    { MODKEY|ShiftMask,             XK_v,           spawn,          CMD("VBoxManage startvm 'Windows10' --type gui") },
+    { MODKEY|ShiftMask,             XK_v,           spawn,          CMD("virt-manger") },
 
     { Mod1Mask|ControlMask,         XK_Delete,      spawn,          CMD("betterlockscreen -l") },
     { Mod1Mask|ControlMask,         XK_s,           spawn,          CMD("systemctl suspend") },
