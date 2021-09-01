@@ -15,12 +15,12 @@ Config {
         \<fc=#FFB86C> %dynnetwork% </fc>\
         \<fc=#c3e88d> %battery% </fc>\
         \<fc=#81AAFF> %memory% </fc> %default:Master%\
-        \<fc=#8BE9FD> %date% </fc>"
+        \<fc=#8BE9FD> %date%            </fc>"
     commands = [ 
-        Run Date "%d %b %Y %H:%M " "date" 600,
-        Run Com "bash" ["-c", "checkupdates | wc -l"] "updates" 3000,
-        Run Com "~/.config/xmobar/trayer-padding-icon.sh" [] "trayerpad" 600,
-        Run Volume "default" "Master" [] 10
+          Run Date "%d %b %Y %H:%M " "date" 600
+        , Run Com "bash" ["-c", "checkupdates | wc -l"] "updates" 3000
+        , Run Com "~/.config/xmobar/trayer-padding-icon.sh" [] "trayerpad" 600
+        , Run Volume "default" "Master" [] 10
         , Run Battery        [ "--template" , "Batt: <acstatus>"
                              , "--Low"      , "10"        -- units: %
                              , "--High"     , "80"        -- units: %

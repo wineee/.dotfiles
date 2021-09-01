@@ -49,7 +49,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,		    xK_F5    ), spawn "brightnessctl set +10%")
     , ((modm,		    xK_F4    ), spawn "brightnessctl set 10%-")
     -- 截图
-    ,((mod4Mask, xK_a), spawn "sleep 0.2; scrot -s -e 'xclip -selection clipboard -t \"image/png\" < $f && rm $f'")
+    , ((mod4Mask, xK_a), spawn "sleep 0.2; scrot -s -e 'xclip -selection clipboard -t \"image/png\" < $f && rm $f'")
+    , ((0,                  xK_Print ), spawn "scrot")
     -- launch dmenu
     , ((modm,               xK_p     ), spawn "dmenu_run")
     -- launch krunner
@@ -59,7 +60,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- browser: vivaldi
     , ((modm,		    xK_v     ), spawn "vivaldi")
     -- close focused window
-    , ((modm .|. shiftMask, xK_c     ), kill)
+    , ((modm,		    xK_q     ), kill)
      -- Rotate through the available layout algorithms
     , ((modm,               xK_space ), sendMessage NextLayout)
     --  Reset the layouts on the current workspace to default
@@ -101,7 +102,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_q     ), io (exitWith ExitSuccess))
 
     -- Restart xmonad
-    , ((modm              , xK_q     ), spawn "xmonad --recompile; xmonad --restart")
+    , ((modm .|. shiftMask, xK_b     ), spawn "xmonad --recompile; xmonad --restart")
 
     -- Run xmessage with a summary of the default keybindings (useful for beginners)
     , ((modm .|. shiftMask, xK_slash ), spawn ("echo \"" ++ help ++ "\" | xmessage -file -"))
@@ -145,7 +146,7 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
     -- you may also bind events to the mouse scroll wheel (button4 and button5)
     ]
 
-myLayout = avoidStruts (tiled ||| Mirror tiled ||| Full)
+myLayout = avoidStruts (tiled ||| Full) --Mirror tiled
   where
      -- default tiling algorithm partitions the screen into two panes
      tiled   = Tall nmaster delta ratio
@@ -201,13 +202,14 @@ myStartupHook = do
 	spawnOnce "xmodmap .Xmodmap"
 	spawnOnce "nm-applet"
 	spawnOnce "fcitx5"
+	spawnOnce "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 4 --transparent true --alpha 0  --tint 0x292D3E --height 20 --distancefrom top --distance 3"
 	setWMName "rewX"
 
 xmobarEscape = concatMap doubleLts
   where doubleLts '<' = "<<"
         doubleLts x    = [x]
 myWorkspaces :: [String]
-myWorkspaces = clickable . (map xmobarEscape)  $  ["web", "irc", "code" ] ++ map show [4..9]
+myWorkspaces = clickable . (map xmobarEscape)  $ map show [1..9]
   where
     clickable l = ["<action=xdotool key super+" ++ show (i) ++ "> " ++ ws ++ "</action>" | (i, ws) <- zip [1 .. 9] l]
 
