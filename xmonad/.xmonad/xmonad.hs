@@ -38,7 +38,7 @@ myNormalBorderColor  = "#3b4252"
 myFocusedBorderColor = "#bc96da"
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
-    [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
+    [ ((modm,               xK_Return), spawn $ XMonad.terminal conf)
     -- lock screen
     , ((modm,               xK_x     ), spawn "betterlockscreen -l")
     -- 音量控制
@@ -52,11 +52,13 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((mod4Mask, xK_a), spawn "sleep 0.2; scrot -s -e 'xclip -selection clipboard -t \"image/png\" < $f && rm $f'")
     , ((0,                  xK_Print ), spawn "scrot")
     -- launch dmenu
-    , ((modm,               xK_p     ), spawn "dmenu_run")
-    -- launch krunner
-    , ((modm .|. shiftMask, xK_p     ), spawn "krunner")
+    , ((modm,               xK_F11     ), spawn "dmenu_run")
+    -- launch rofi
+    , ((modm,               xK_b     ), spawn "rofi -show window")
+    , ((modm,		    xK_p     ), spawn "rofi -show run")
+    , ((modm .|. shiftMask, xK_p     ), spawn "rofi -show drun")
     -- browser: firefox
-    , ((mod4Mask,           xK_f     ), spawn "firefox")
+    , ((modm,               xK_f     ), spawn "firefox")
     -- browser: vivaldi
     , ((modm,		    xK_v     ), spawn "vivaldi")
     -- close focused window
@@ -77,7 +79,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- Move focus to the master window
     , ((modm,               xK_m     ), windows W.focusMaster  )
     -- Swap the focused window and the master window
-    , ((modm,               xK_Return), windows W.swapMaster)
+    , ((modm .|. shiftMask, xK_Return), windows W.swapMaster)
     -- Swap the focused window with the next window
     , ((modm .|. shiftMask, xK_j     ), windows W.swapDown  )
     -- Swap the focused window with the previous window
