@@ -150,4 +150,3 @@ configuration {
 /*	me-accept-entry: "MouseDPrimary";*/
 /*	me-accept-custom: "Control+MouseDPrimary";*/
 }
-@import "/nix/store/5cd2k43bi5lwnywnbdkl775b2mj1672i-rofi-1.6.1/share/rofi/themes/DarkBlue.rasi"

@@ -39,6 +39,7 @@ myFocusedBorderColor = "#bc96da"
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm,               xK_Return), spawn $ XMonad.terminal conf)
+    , ((modm .|. shiftMask, xK_d     ), spawn "dolphin")
     -- lock screen
     , ((modm,               xK_x     ), spawn "betterlockscreen -l")
     -- 音量控制
@@ -200,7 +201,6 @@ myStartupHook = do
 	spawnOnce "nitrogen --restore &"
 	spawnOnce "compton &"
 	spawnOnce "picom -f"
-	spawnOnce "albert"
 	spawnOnce "xmodmap .Xmodmap"
 	spawnOnce "nm-applet"
 	spawnOnce "fcitx5"
