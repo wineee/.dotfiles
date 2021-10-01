@@ -174,6 +174,8 @@ myLayout = avoidStruts (tiled ||| Full) --Mirror tiled
 myManageHook = fullscreenManageHook <+> manageDocks <+> composeAll
     [ className =? "MPlayer"        --> doFloat
     , className =? "Gimp"           --> doFloat
+    , className =? "copyq"	    --> doFloat
+    , className =? "qv2ray"         --> doFloat
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore 
     , isFullscreen --> doFullFloat]
@@ -204,6 +206,9 @@ myStartupHook = do
 	spawnOnce "xmodmap .Xmodmap"
 	spawnOnce "nm-applet"
 	spawnOnce "fcitx5"
+	spawnOnce "dunst"
+        spawnOnce "copyq"
+	-- spawnOnce "qv2ray &"
 	spawnOnce "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 4 --transparent true --alpha 0  --tint 0x292D3E --height 20 --distancefrom top --distance 3"
 	setWMName "rewX"
 
