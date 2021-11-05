@@ -207,8 +207,8 @@ myStartupHook = do
 	spawnOnce "nm-applet"
 	spawnOnce "fcitx5"
 	spawnOnce "dunst"
-        spawnOnce "copyq"
-	-- spawnOnce "qv2ray &"
+	spawnOnce "copyq"
+	spawnOnce "qv2ray &"
 	spawnOnce "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 8 --transparent true --alpha 0  --tint 0x292D3E --height 20 --distancefrom top --distance 3"
 	setWMName "rewX"
 
