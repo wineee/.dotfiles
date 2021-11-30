@@ -15,7 +15,7 @@ Config {
         \<fc=#FFB86C> %dynnetwork% </fc>\
         \<fc=#c3e88d> %battery% </fc>\
         \<fc=#81AAFF> %memory% </fc> %default:Master%\
-        \<fc=#8BE9FD> %date%                </fc>"
+        \<fc=#8BE9FD> %date%                         </fc>"
     commands = [ 
           Run Date "%d %b %Y %H:%M " "date" 600
         , Run Com "bash" ["-c", "checkupdates | wc -l"] "updates" 3000
