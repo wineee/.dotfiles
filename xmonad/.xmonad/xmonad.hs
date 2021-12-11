@@ -39,7 +39,7 @@ myFocusedBorderColor = "#bc96da"
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm,               xK_Return), spawn $ XMonad.terminal conf)
-    , ((modm .|. shiftMask, xK_d     ), spawn "dolphin")
+    , ((modm,		    xK_d     ), spawn "dolphin")
     -- lock screen
     , ((modm,               xK_x     ), spawn "betterlockscreen -l")
     -- 音量控制
