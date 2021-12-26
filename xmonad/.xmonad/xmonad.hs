@@ -5,7 +5,7 @@ import XMonad.Util.SpawnOnce ( spawnOnce )
 import XMonad.Util.Run 
 
 import XMonad.Hooks.SetWMName
-import XMonad.Hooks.ManageDocks ( avoidStruts, docks, manageDocks, Direction2D(D, L, R, U) )
+import XMonad.Hooks.ManageDocks -- ( avoidStruts, docks, manageDocks, Direction2D(D, L, R, U), ToggleStruts )
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops ( ewmh )
 import XMonad.Hooks.ManageHelpers ( doFullFloat, isFullscreen )
@@ -99,7 +99,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- Use this binding with avoidStruts from Hooks.ManageDocks.
     -- See also the statusBar function from Hooks.DynamicLog.
     --
-    -- , ((modm              , xK_b     ), sendMessage ToggleStruts)
+    , ((modm              , xK_b     ), sendMessage ToggleStruts)
 
     -- Quit xmonad
     , ((modm .|. shiftMask, xK_q     ), io (exitWith ExitSuccess))
@@ -109,6 +109,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- Run xmessage with a summary of the default keybindings (useful for beginners)
     , ((modm .|. shiftMask, xK_slash ), spawn ("echo \"" ++ help ++ "\" | xmessage -file -"))
+
     ]
     ++
 
@@ -149,7 +150,7 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
     -- you may also bind events to the mouse scroll wheel (button4 and button5)
     ]
 
-myLayout = avoidStruts (tiled ||| Full) --Mirror tiled
+myLayout = smartBorders . avoidStruts $ (tiled ||| Full) --Mirror tiled
   where
      -- default tiling algorithm partitions the screen into two panes
      tiled   = Tall nmaster delta ratio
@@ -177,7 +178,8 @@ myManageHook = fullscreenManageHook <+> manageDocks <+> composeAll
     , className =? "copyq"	    --> doFloat
     , className =? "qv2ray"         --> doFloat
     , resource  =? "desktop_window" --> doIgnore
-    , resource  =? "kdesktop"       --> doIgnore 
+    , resource  =? "kdesktop"       --> doIgnore
+    , className =? "virt-manager"   --> doFloat
     , isFullscreen --> doFullFloat]
 
 -- Event handling
