@@ -21,7 +21,7 @@ import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 import Data.Maybe (maybeToList)
 
-myTerminal      = "alacritty"
+myTerminal      = "termonad" --"alacritty"
 
 myFocusFollowsMouse :: Bool
 myFocusFollowsMouse = True
@@ -203,8 +203,7 @@ myLogHook = return ()
 -- per-workspace layout choices.
 myStartupHook = do
 	spawnOnce "nitrogen --restore &"
-	spawnOnce "compton &"
-	spawnOnce "picom -f"
+	spawnOnce "picom &"
 	spawnOnce "xmodmap .Xmodmap"
 	spawnOnce "nm-applet"
 	spawnOnce "fcitx5"
