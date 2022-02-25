@@ -3,7 +3,8 @@
 # 字体使用Soure Code Pro
 family: Source Code Pro
 # 背景不透明度
-background_opacity: 0.8
+window:
+  opacity: 0.8
 
 shell:
   program: /run/current-system/sw/bin/zsh
