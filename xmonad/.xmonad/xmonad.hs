@@ -21,6 +21,13 @@ import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 import Data.Maybe (maybeToList)
 
+-- Imports for Polybar --
+import qualified Codec.Binary.UTF8.String              as UTF8
+import qualified DBus                                  as D
+import qualified DBus.Client                           as D
+import           XMonad.Hooks.DynamicLog
+
+
 myTerminal      = "termonad" --"alacritty"
 
 myFocusFollowsMouse :: Bool
@@ -39,7 +46,7 @@ myFocusedBorderColor = "#bc96da"
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm,               xK_Return), spawn $ XMonad.terminal conf)
-    , ((modm,		    xK_d     ), spawn "dolphin")
+    , ((modm,               xK_d     ), spawn "dolphin")
     -- lock screen
     , ((modm,               xK_x     ), spawn "betterlockscreen -l")
     -- 音量控制
@@ -47,23 +54,23 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,               xK_F2    ), spawn "pamixer -d 10")
     , ((modm,               xK_F3    ), spawn "pamixer -i 10")
     -- 屏幕亮度
-    , ((modm,		    xK_F5    ), spawn "brightnessctl set +10%")
-    , ((modm,		    xK_F4    ), spawn "brightnessctl set 10%-")
+    , ((modm,               xK_F5    ), spawn "brightnessctl set +10%")
+    , ((modm,               xK_F4    ), spawn "brightnessctl set 10%-")
     -- 截图
-    , ((mod4Mask, xK_a), spawn "sleep 0.2; scrot -s -e 'xclip -selection clipboard -t \"image/png\" < $f && rm $f'")
+    , ((mod4Mask,           xK_a     ), spawn "sleep 0.2; scrot -s -e 'xclip -selection clipboard -t \"image/png\" < $f && rm $f'")
     , ((0,                  xK_Print ), spawn "scrot")
     -- launch dmenu
     , ((modm,               xK_F11     ), spawn "dmenu_run")
     -- launch rofi
     , ((modm,               xK_b     ), spawn "rofi -show window")
-    , ((modm,		    xK_p     ), spawn "rofi -show run")
+    , ((modm,               xK_p     ), spawn "rofi -show run")
     , ((modm .|. shiftMask, xK_p     ), spawn "rofi -show drun")
     -- browser: firefox
     , ((modm,               xK_f     ), spawn "firefox")
     -- browser: vivaldi
-    , ((modm,		    xK_v     ), spawn "vivaldi")
+    , ((modm,               xK_v     ), spawn "vivaldi")
     -- close focused window
-    , ((modm,		    xK_q     ), kill)
+    , ((modm,               xK_q     ), kill)
      -- Rotate through the available layout algorithms
     , ((modm,               xK_space ), sendMessage NextLayout)
     --  Reset the layouts on the current workspace to default
@@ -175,7 +182,7 @@ myLayout = smartBorders . avoidStruts $ (tiled ||| Full) --Mirror tiled
 myManageHook = fullscreenManageHook <+> manageDocks <+> composeAll
     [ className =? "MPlayer"        --> doFloat
     , className =? "Gimp"           --> doFloat
-    , className =? "copyq"	    --> doFloat
+    , className =? "copyq"          --> doFloat
     , className =? "qv2ray"         --> doFloat
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore
@@ -196,44 +203,81 @@ myEventHook = mempty
 -- Perform an arbitrary action on each internal state change or X event.
 -- See the 'XMonad.Hooks.DynamicLog' extension for examples.
 --
+-- Polybar settings (needs DBus client).
+--
+mkDbusClient :: IO D.Client
+mkDbusClient = do
+  dbus <- D.connectSession
+  D.requestName dbus (D.busName_ "org.xmonad.log") opts
+  return dbus
+ where
+  opts = [D.nameAllowReplacement, D.nameReplaceExisting, D.nameDoNotQueue]
+
+-- Emit a DBus signal on log updates
+dbusOutput :: D.Client -> String -> IO ()
+dbusOutput dbus str =
+  let opath  = D.objectPath_ "/org/xmonad/Log"
+      iname  = D.interfaceName_ "org.xmonad.Log"
+      mname  = D.memberName_ "Update"
+      signal = D.signal opath iname mname
+      body   = [D.toVariant $ UTF8.decodeString str]
+  in  D.emit dbus $ signal { D.signalBody = body }
+
+polybarHook :: D.Client -> PP
+polybarHook dbus =
+  let wrapper c s | s /= "NSP" = wrap ("%{F" <> c <> "} ") " %{F-}" s
+                  | otherwise  = mempty
+      blue   = "#2E9AFE"
+      gray   = "#7F7F7F"
+      orange = "#ea4300"
+      purple = "#9058c7"
+      red    = "#722222"
+  in  def { ppOutput          = dbusOutput dbus
+          , ppCurrent         = wrapper blue
+          , ppVisible         = wrapper gray
+          , ppUrgent          = wrapper orange
+          , ppHidden          = wrapper gray
+          , ppHiddenNoWindows = wrapper red
+          , ppTitle           = wrapper purple . shorten 90
+          }
+
+myPolybarLogHook dbus = myLogHook <+> dynamicLogWithPP (polybarHook dbus)
+
+
 myLogHook = return ()
 
 -- Perform an arbitrary action each time xmonad starts or is restarted
 -- with mod-q.  Used by, e.g., XMonad.Layout.PerWorkspace to initialize
 -- per-workspace layout choices.
 myStartupHook = do
-	spawnOnce "nitrogen --restore &"
-	spawnOnce "picom &"
-	spawnOnce "xmodmap .Xmodmap"
-	spawnOnce "nm-applet"
-	spawnOnce "fcitx5"
-	spawnOnce "dunst"
-	spawnOnce "copyq"
-	spawnOnce "qv2ray &"
-	spawnOnce "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 8 --transparent true --alpha 0  --tint 0x292D3E --height 20 --distancefrom top --distance 3"
-	setWMName "rewX"
+  spawnOnce "nitrogen --restore &"
+  spawnOnce "picom &"
+  spawnOnce "xmodmap .Xmodmap"
+  spawnOnce "nm-applet"
+  spawnOnce "fcitx5"
+  spawnOnce "dunst"
+  spawnOnce "copyq"
+  -- spawnOnce "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 8 --transparent true --alpha 0  --tint 0x292D3E --height 20 --distancefrom top --distance 3"
+  setWMName "rewX"
 
-xmobarEscape = concatMap doubleLts
-  where doubleLts '<' = "<<"
-        doubleLts x    = [x]
+--xmobarEscape = concatMap doubleLts
+--  where doubleLts '<' = "<<"
+--        doubleLts x    = [x]
+
+--myWorkspaces = clickable . (map xmobarEscape)  $ map show [1..9]
+-- where
+--    clickable l = ["<action=xdotool key super+" ++ show (i) ++ "> " ++ ws ++ "</action>" | (i, ws) <- zip [1 .. 9] l]
 myWorkspaces :: [String]
-myWorkspaces = clickable . (map xmobarEscape)  $ map show [1..9]
-  where
-    clickable l = ["<action=xdotool key super+" ++ show (i) ++ "> " ++ ws ++ "</action>" | (i, ws) <- zip [1 .. 9] l]
+myWorkspaces =  map show [1..9]
 
+
+main :: IO ()
 main = do
-	xmproc <- spawnPipe ("xmobar -x 0 ~/.config/xmobar/xmobarrc.hs")
-	xmonad $ ewmh $ docks $ defaults {
-	logHook = dynamicLogWithPP $ xmobarPP {
-	    ppOutput = hPutStrLn xmproc
-	   ,ppVisible = xmobarColor "#7F7F7F" "" 
-	   ,ppTitle = xmobarColor "#d9c5bb" "" 
-	   ,ppCurrent = xmobarColor "#2E9AFE" ""
-           ,ppHidden  = xmobarColor "#7F7F7F" ""
-	   ,ppLayout = xmobarColor"#7F7F7F" ""
-           ,ppUrgent = xmobarColor "#900000" "" . wrap "[" "]" 
-        }
-    }
+  -- xmproc <- spawnPipe ("xmobar -x 0 ~/.config/xmobar/xmobarrc.hs")
+  dbus <- mkDbusClient
+  xmonad $ ewmh $ docks $ defaults {
+    logHook = myPolybarLogHook dbus
+  }
 
 defaults = def {
       -- simple stuff
